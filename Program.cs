@@ -1,4 +1,12 @@
-﻿using System;
+﻿// # Kelas: SI-24-02
+// # Kelompok: 05
+// # Anggota Kelompok: 
+// # 1. Muhammad Umar Fathan Alfaruq (102042400095) 
+// # 2. Desti Mutiara Anggun (102042400099)
+// # 3. I Komang Arya W.T.W (102042400169)
+// # 4. Fatihul Chaira (102042400005)
+
+using System;
 using MySql.Data.MySqlClient;
 
 class Program
@@ -111,7 +119,7 @@ class Program
         }
     }
 
-static void DisplayData()
+    static void DisplayData()
 {
     try
     {
@@ -162,10 +170,8 @@ static void DisplayData()
     }
 }
 
-
-
-// Fungsi mencetak garis tabel
-static void PrintTableLine(int[] columnWidths)
+    // Fungsi mencetak garis tabel
+    static void PrintTableLine(int[] columnWidths)
 {
     foreach (var width in columnWidths)
     {
@@ -175,8 +181,8 @@ static void PrintTableLine(int[] columnWidths)
     Console.WriteLine("+");
 }
 
-// Fungsi mencetak satu baris data
-static void PrintRow(string[] rowData, int[] columnWidths)
+    // Fungsi mencetak satu baris data
+    static void PrintRow(string[] rowData, int[] columnWidths)
 {
     for (int i = 0; i < rowData.Length; i++)
     {
@@ -186,9 +192,6 @@ static void PrintRow(string[] rowData, int[] columnWidths)
     Console.WriteLine("|");
 }
 
-
-
-    // Tambahkan fungsi UpdateData, DeleteData, SearchData, dan FilterData dengan struktur serupa.
 
     static void UpdateData()
 {
@@ -250,7 +253,7 @@ static void PrintRow(string[] rowData, int[] columnWidths)
 }
 
 
-static void DeleteData()
+    static void DeleteData()
 {
     try
     {
@@ -277,7 +280,7 @@ static void DeleteData()
     }
 }
 
-static void SearchData()
+    static void SearchData()
 {
     try
     {
@@ -312,7 +315,7 @@ static void SearchData()
     }
 }
 
-static void FilterData()
+    static void FilterData()
 {
     try
     {

@@ -35,3 +35,4 @@ C:\Users\Rado\TugasBesarAlpro\obj\Debug\net8.0\refint\TugasBesarAlpro.dll
 C:\Users\Rado\TugasBesarAlpro\obj\Debug\net8.0\TugasBesarAlpro.pdb
 C:\Users\Rado\TugasBesarAlpro\obj\Debug\net8.0\TugasBesarAlpro.genruntimeconfig.cache
 C:\Users\Rado\TugasBesarAlpro\obj\Debug\net8.0\ref\TugasBesarAlpro.dll
+C:\Users\Rado\TugasBesarAlpro\obj\Debug\net8.0\TugasBesarAlpro.sourcelink.json
