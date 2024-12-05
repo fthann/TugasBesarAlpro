@@ -1,25 +1,35 @@
-﻿using System;
+﻿// # Kelas: SI-24-02
+// # Kelompok: 05
+// # Anggota Kelompok: 
+// # 1. Muhammad Umar Fathan Alfaruq (102042400095) 
+// # 2. Desti Mutiara Anggun (102042400099)
+// # 3. I Komang Arya W.T.W (102042400169)
+// # 4. Fatihul Chaira (102042400005)
+
+
+using System;
 using MySql.Data.MySqlClient;
 
 class Program
 {
-    static MySqlConnection connection = new MySqlConnection("Server=localhost;Database=parkir_db;Uid=root;Pwd=;");
+    static string connectionString = "Server=localhost;Database=manajemen_parkir;Uid=root;Pwd=;";
 
-    static void Main(string[] args)
+    static void Main()
     {
         while (true)
         {
-            Console.WriteLine("\n=== Menu Manajemen Data Parkir ===");
-            Console.WriteLine("1. Masukan Data");
+            Console.Clear();
+            Console.WriteLine("==== Manajemen Data Parkir Kelompok 5 ====");
+            Console.WriteLine("1. Masukan Data ");
             Console.WriteLine("2. Tampilkan Data parkir");
-            Console.WriteLine("3. Edit Data parkir");
-            Console.WriteLine("4. Hapus Data parkir");
-            Console.WriteLine("5. Search Data parkir");
-            Console.WriteLine("6. Filter Data parkir");
-            Console.WriteLine("7. Keluar Program");
-            Console.Write("Pilih opsi (1-7): ");
-            
+            Console.WriteLine("3. Edit Data");
+            Console.WriteLine("4. Hapus Data");
+            Console.WriteLine("5. Cari Data");
+            Console.WriteLine("6. Filter Data");
+            Console.WriteLine("7. Exit");
+            Console.Write("Pilih menu: ");
             string choice = Console.ReadLine();
+
             switch (choice)
             {
                 case "1":
@@ -41,42 +51,83 @@ class Program
                     FilterData();
                     break;
                 case "7":
-                    Console.WriteLine("Program selesai. Terima kasih!");
+                    Console.WriteLine("Keluar dari program.");
                     return;
                 default:
-                    Console.WriteLine("Pilihan tidak valid. Silakan coba lagi.");
+                    Console.WriteLine("Pilihan tidak valid. Tekan Enter untuk melanjutkan.");
+                    Console.ReadLine();
                     break;
             }
         }
     }
 
-    static void InsertData()
+
+    static int GetNextAvailableID()
+{
+    int nextID = 1; // Mulai dari ID 1
+    using (MySqlConnection connection = new MySqlConnection(connectionString))
     {
         try
         {
             connection.Open();
+            string query = "SELECT id FROM data_parkir ORDER BY id ASC"; // Ambil semua ID yang ada
+            MySqlCommand cmd = new MySqlCommand(query, connection);
+            MySqlDataReader reader = cmd.ExecuteReader();
 
-            Console.Write("Jenis Kendaraan: ");
-            string jenis = Console.ReadLine();
-            Console.Write("Merek Kendaraan: ");
-            string merek = Console.ReadLine();
-            Console.Write("Nama Kendaraan: ");
-            string nama = Console.ReadLine();
-            Console.Write("Jumlah Kendaraan: ");
-            int jumlah = int.Parse(Console.ReadLine());
-            Console.Write("Status Kendaraan: ");
-            string status = Console.ReadLine();
-            Console.Write("Waktu Mulai: ");
-            string waktuMulai = Console.ReadLine();
-            Console.Write("Waktu Selesai: ");
-            string waktuSelesai = Console.ReadLine();
-            Console.Write("Plat Kendaraan: ");
-            string plat = Console.ReadLine();
+            while (reader.Read())
+            {
+                if ((int)reader["id"] == nextID)
+                {
+                    nextID++; // Jika ID ada, periksa ID berikutnya
+                }
+                else
+                {
+                    break; // Keluar jika menemukan celah (ID kosong)
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error while retrieving next ID: {ex.Message}");
+        }
+        finally
+        {
+            connection.Close();
+        }
+    }
+    return nextID; // Kembalikan ID yang tersedia
+}
 
-            string insertQuery = @"
-                INSERT INTO data_parkir2 (jenis_kendaraan, merek_kendaraan, nama_kendaraan, jumlah, status_kendaraan, waktu_mulai, waktu_selesai, plat)
-                VALUES (@jenis, @merek, @nama, @jumlah, @status, @waktuMulai, @waktuSelesai, @plat)";
-            MySqlCommand cmd = new MySqlCommand(insertQuery, connection);
+
+
+    static void InsertData()
+{
+    int id = GetNextAvailableID(); // Dapatkan ID berikutnya yang tersedia
+    Console.Write("Jenis Kendaraan: ");
+    string jenis = Console.ReadLine();
+    Console.Write("Merek Kendaraan: ");
+    string merek = Console.ReadLine();
+    Console.Write("Nama Kendaraan: ");
+    string nama = Console.ReadLine();
+    Console.Write("Jumlah: ");
+    int jumlah = int.Parse(Console.ReadLine());
+    Console.Write("Status Kendaraan (Parkir/Keluar): ");
+    string status = Console.ReadLine();
+    Console.Write("Waktu Mulai: ");
+    string waktuMulai = Console.ReadLine();
+    Console.Write("Waktu Selesai: ");
+    string waktuSelesai = Console.ReadLine();
+    Console.Write("Plat Nomor: ");
+    string plat = Console.ReadLine();
+
+    using (MySqlConnection connection = new MySqlConnection(connectionString))
+    {
+        try
+        {
+            connection.Open();
+            string query = "INSERT INTO data_parkir (id, jenis_kendaraan, merek_kendaraan, nama_kendaraan, jumlah, status_kendaraan, waktu_mulai, waktu_selesai, plat) VALUES (@id, @jenis, @merek, @nama, @jumlah, @status, @waktuMulai, @waktuSelesai, @plat)";
+            MySqlCommand cmd = new MySqlCommand(query, connection);
+            cmd.Parameters.AddWithValue("@id", id);
             cmd.Parameters.AddWithValue("@jenis", jenis);
             cmd.Parameters.AddWithValue("@merek", merek);
             cmd.Parameters.AddWithValue("@nama", nama);
@@ -87,210 +138,222 @@ class Program
             cmd.Parameters.AddWithValue("@plat", plat);
 
             cmd.ExecuteNonQuery();
-            Console.WriteLine("Data berhasil ditambahkan!");
+            Console.WriteLine("Data berhasil ditambahkan.");
         }
         catch (Exception ex)
         {
-            Console.WriteLine("Kesalahan: " + ex.Message);
+            Console.WriteLine($"Error: {ex.Message}");
         }
         finally
         {
             connection.Close();
         }
     }
+    Console.WriteLine("Tekan Enter untuk melanjutkan.");
+    Console.ReadLine();
+}
+
 
     static void DisplayData()
     {
-        try
+        using (MySqlConnection connection = new MySqlConnection(connectionString))
         {
-            connection.Open();
-
-            string selectQuery = "SELECT * FROM data_parkir2 ORDER BY id";
-            MySqlCommand cmd = new MySqlCommand(selectQuery, connection);
-            MySqlDataReader reader = cmd.ExecuteReader();
-
-            Console.WriteLine("\n=== Data Parkir ===");
-            Console.WriteLine("| ID  | Jenis    | Merek     | Nama       | Jumlah | Status    | Waktu Mulai      | Waktu Selesai   | Plat      |");
-            Console.WriteLine(new string('-', 95));
-            while (reader.Read())
+            try
             {
-                Console.WriteLine($"| {reader["id"],-4} | {reader["jenis_kendaraan"],-8} | {reader["merek_kendaraan"],-9} | {reader["nama_kendaraan"],-10} | {reader["jumlah"],-6} | {reader["status_kendaraan"],-9} | {reader["waktu_mulai"],-15} | {reader["waktu_selesai"],-15} | {reader["plat"],-8} |");
+                connection.Open();
+                string query = "SELECT * FROM data_parkir";
+                MySqlCommand cmd = new MySqlCommand(query, connection);
+                MySqlDataReader reader = cmd.ExecuteReader();
+
+                Console.WriteLine("==== Data Parkir Kelompok 5 ====");
+                Console.WriteLine(String.Format("{0,-4} | {1,-15} | {2,-15} | {3,-15} | {4,-7} | {5,-10} | {6,-20} | {7,-20} | {8,-10}",
+                    "ID", "Jenis", "Merek", "Nama", "Jumlah", "Status", "Waktu Mulai", "Waktu Selesai", "Plat"));
+                Console.WriteLine(new string('-', 112));
+
+                while (reader.Read())
+                {
+                    Console.WriteLine(String.Format("{0,-4} | {1,-15} | {2,-15} | {3,-15} | {4,-7} | {5,-10} | {6,-20} | {7,-20} | {8,-10}",
+                        reader["id"], reader["jenis_kendaraan"], reader["merek_kendaraan"], reader["nama_kendaraan"], reader["jumlah"],
+                        reader["status_kendaraan"], reader["waktu_mulai"], reader["waktu_selesai"], reader["plat"]));
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error: {ex.Message}");
+            }
+            finally
+            {
+                connection.Close();
             }
         }
-        catch (Exception ex)
-        {
-            Console.WriteLine("Kesalahan: " + ex.Message);
-        }
-        finally
-        {
-            connection.Close();
-        }
+        Console.WriteLine("Tekan Enter untuk melanjutkan.");
+        Console.ReadLine();
     }
 
     static void UpdateData()
     {
-        try
+        DisplayData();
+        Console.Write("Masukkan ID data yang ingin diupdate: ");
+        int id = int.Parse(Console.ReadLine());
+
+        Console.Write("Jenis Kendaraan Baru: ");
+        string jenis = Console.ReadLine();
+        Console.Write("Merek Kendaraan Baru: ");
+        string merek = Console.ReadLine();
+        Console.Write("Nama Kendaraan Baru: ");
+        string nama = Console.ReadLine();
+        Console.Write("Jumlah Baru: ");
+        int jumlah = int.Parse(Console.ReadLine());
+        Console.Write("Status Kendaraan Baru (Parkir/Selesai): ");
+        string status = Console.ReadLine();
+        Console.Write("Waktu Mulai Baru: ");
+        string waktuMulai = Console.ReadLine();
+        Console.Write("Waktu Selesai Baru: ");
+        string waktuSelesai = Console.ReadLine();
+        Console.Write("Plat Nomor Baru: ");
+        string plat = Console.ReadLine();
+
+        using (MySqlConnection connection = new MySqlConnection(connectionString))
         {
-            connection.Open();
-
-            DisplayData();
-            Console.Write("\nMasukkan ID yang ingin diupdate: ");
-            int id = int.Parse(Console.ReadLine());
-
-            string checkQuery = "SELECT COUNT(*) FROM data_parkir2 WHERE id = @id";
-            MySqlCommand checkCmd = new MySqlCommand(checkQuery, connection);
-            checkCmd.Parameters.AddWithValue("@id", id);
-            int count = Convert.ToInt32(checkCmd.ExecuteScalar());
-
-            if (count == 0)
+            try
             {
-                Console.WriteLine("ID tidak ditemukan.");
+                connection.Open();
+                string query = "UPDATE data_parkir SET jenis_kendaraan=@jenis, merek_kendaraan=@merek, nama_kendaraan=@nama, jumlah=@jumlah, status_kendaraan=@status, waktu_mulai=@waktuMulai, waktu_selesai=@waktuSelesai, plat=@plat WHERE id=@id";
+                MySqlCommand cmd = new MySqlCommand(query, connection);
+                cmd.Parameters.AddWithValue("@id", id);
+                cmd.Parameters.AddWithValue("@jenis", jenis);
+                cmd.Parameters.AddWithValue("@merek", merek);
+                cmd.Parameters.AddWithValue("@nama", nama);
+                cmd.Parameters.AddWithValue("@jumlah", jumlah);
+                cmd.Parameters.AddWithValue("@status", status);
+                cmd.Parameters.AddWithValue("@waktuMulai", waktuMulai);
+                cmd.Parameters.AddWithValue("@waktuSelesai", waktuSelesai);
+                cmd.Parameters.AddWithValue("@plat", plat);
+
+                cmd.ExecuteNonQuery();
+                Console.WriteLine("Data berhasil diupdate.");
             }
-            else
+            catch (Exception ex)
             {
-                Console.Write("Jenis Kendaraan Baru: ");
-                string jenis = Console.ReadLine();
-                Console.Write("Merek Kendaraan Baru: ");
-                string merek = Console.ReadLine();
-                Console.Write("Nama Kendaraan Baru: ");
-                string nama = Console.ReadLine();
-                Console.Write("Jumlah Kendaraan Baru: ");
-                int jumlah = int.Parse(Console.ReadLine());
-                Console.Write("Status Kendaraan Baru: ");
-                string status = Console.ReadLine();
-                Console.Write("Waktu Mulai Baru: ");
-                string waktuMulai = Console.ReadLine();
-                Console.Write("Waktu Selesai Baru: ");
-                string waktuSelesai = Console.ReadLine();
-                Console.Write("Plat Kendaraan Baru: ");
-                string plat = Console.ReadLine();
-
-                string updateQuery = @"
-                    UPDATE data_parkir2
-                    SET jenis_kendaraan = @jenis, merek_kendaraan = @merek, nama_kendaraan = @nama,
-                        jumlah = @jumlah, status_kendaraan = @status, waktu_mulai = @waktuMulai,
-                        waktu_selesai = @waktuSelesai, plat = @plat
-                    WHERE id = @id";
-                MySqlCommand updateCmd = new MySqlCommand(updateQuery, connection);
-                updateCmd.Parameters.AddWithValue("@jenis", jenis);
-                updateCmd.Parameters.AddWithValue("@merek", merek);
-                updateCmd.Parameters.AddWithValue("@nama", nama);
-                updateCmd.Parameters.AddWithValue("@jumlah", jumlah);
-                updateCmd.Parameters.AddWithValue("@status", status);
-                updateCmd.Parameters.AddWithValue("@waktuMulai", waktuMulai);
-                updateCmd.Parameters.AddWithValue("@waktuSelesai", waktuSelesai);
-                updateCmd.Parameters.AddWithValue("@plat", plat);
-                updateCmd.Parameters.AddWithValue("@id", id);
-
-                updateCmd.ExecuteNonQuery();
-                Console.WriteLine("Data berhasil diupdate!");
+                Console.WriteLine($"Error: {ex.Message}");
+            }
+            finally
+            {
+                connection.Close();
             }
         }
-        catch (Exception ex)
-        {
-            Console.WriteLine("Kesalahan: " + ex.Message);
-        }
-        finally
-        {
-            connection.Close();
-        }
+        Console.WriteLine("Tekan Enter untuk melanjutkan.");
+        Console.ReadLine();
     }
 
     static void DeleteData()
     {
-        try
-        {
-            connection.Open();
+        DisplayData();
+        Console.Write("Masukkan ID data yang ingin dihapus: ");
+        int id = int.Parse(Console.ReadLine());
 
-            DisplayData();
-            Console.Write("\nMasukkan ID yang ingin dihapus: ");
-            int id = int.Parse(Console.ReadLine());
-
-            string deleteQuery = "DELETE FROM data_parkir2 WHERE id = @id";
-            MySqlCommand deleteCmd = new MySqlCommand(deleteQuery, connection);
-            deleteCmd.Parameters.AddWithValue("@id", id);
-
-            deleteCmd.ExecuteNonQuery();
-            Console.WriteLine("Data berhasil dihapus!");
-        }
-        catch (Exception ex)
+        using (MySqlConnection connection = new MySqlConnection(connectionString))
         {
-            Console.WriteLine("Kesalahan: " + ex.Message);
+            try
+            {
+                connection.Open();
+                string query = "DELETE FROM data_parkir WHERE id=@id";
+                MySqlCommand cmd = new MySqlCommand(query, connection);
+                cmd.Parameters.AddWithValue("@id", id);
+
+                cmd.ExecuteNonQuery();
+                Console.WriteLine("Data berhasil dihapus.");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error: {ex.Message}");
+            }
+            finally
+            {
+                connection.Close();
+            }
         }
-        finally
-        {
-            connection.Close();
-        }
+        Console.WriteLine("Tekan Enter untuk melanjutkan.");
+        Console.ReadLine();
     }
 
     static void SearchData()
     {
-        try
+        Console.Write("Masukkan kata kunci untuk pencarian: ");
+        string keyword = Console.ReadLine();
+
+        using (MySqlConnection connection = new MySqlConnection(connectionString))
         {
-            connection.Open();
-
-            Console.Write("Masukkan kata kunci untuk mencari data: ");
-            string keyword = Console.ReadLine();
-
-            string searchQuery = @"
-                SELECT * FROM data_parkir2
-                WHERE jenis_kendaraan LIKE @keyword
-                OR merek_kendaraan LIKE @keyword
-                OR nama_kendaraan LIKE @keyword
-                ORDER BY id";
-            MySqlCommand searchCmd = new MySqlCommand(searchQuery, connection);
-            searchCmd.Parameters.AddWithValue("@keyword", "%" + keyword + "%");
-
-            MySqlDataReader reader = searchCmd.ExecuteReader();
-
-            Console.WriteLine("\n=== Hasil Pencarian ===");
-            Console.WriteLine("| ID  | Jenis    | Merek     | Nama       | Jumlah | Status    | Waktu Mulai      | Waktu Selesai   | Plat      |");
-            Console.WriteLine(new string('-', 95));
-            while (reader.Read())
+            try
             {
-                Console.WriteLine($"| {reader["id"],-4} | {reader["jenis_kendaraan"],-8} | {reader["merek_kendaraan"],-9} | {reader["nama_kendaraan"],-10} | {reader["jumlah"],-6} | {reader["status_kendaraan"],-9} | {reader["waktu_mulai"],-15} | {reader["waktu_selesai"],-15} | {reader["plat"],-8} |");
+                connection.Open();
+                string query = "SELECT * FROM data_parkir WHERE jenis_kendaraan LIKE @keyword OR nama_kendaraan LIKE @keyword OR plat LIKE @keyword";
+                MySqlCommand cmd = new MySqlCommand(query, connection);
+                cmd.Parameters.AddWithValue("@keyword", $"%{keyword}%");
+                MySqlDataReader reader = cmd.ExecuteReader();
+
+                Console.WriteLine("==== Hasil Pencarian ====");
+                Console.WriteLine(String.Format("{0,-4} | {1,-15} | {2,-15} | {3,-15} | {4,-7} | {5,-10} | {6,-20} | {7,-20} | {8,-10}",
+                    "ID", "Jenis", "Merek", "Nama", "Jumlah", "Status", "Waktu Mulai", "Waktu Selesai", "Plat"));
+                Console.WriteLine(new string('-', 112));
+
+                while (reader.Read())
+                {
+                    Console.WriteLine(String.Format("{0,-4} | {1,-15} | {2,-15} | {3,-15} | {4,-7} | {5,-10} | {6,-20} | {7,-20} | {8,-10}",
+                        reader["id"], reader["jenis_kendaraan"], reader["merek_kendaraan"], reader["nama_kendaraan"], reader["jumlah"],
+                        reader["status_kendaraan"], reader["waktu_mulai"], reader["waktu_selesai"], reader["plat"]));
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error: {ex.Message}");
+            }
+            finally
+            {
+                connection.Close();
             }
         }
-        catch (Exception ex)
-        {
-            Console.WriteLine("Kesalahan: " + ex.Message);
-        }
-        finally
-        {
-            connection.Close();
-        }
+        Console.WriteLine("Tekan Enter untuk melanjutkan.");
+        Console.ReadLine();
     }
 
     static void FilterData()
     {
-        try
+        Console.Write("Masukkan status kendaraan untuk filter (Parkir/Keluar): ");
+        string status = Console.ReadLine();
+
+        using (MySqlConnection connection = new MySqlConnection(connectionString))
         {
-            connection.Open();
-
-            Console.Write("Masukkan status untuk memfilter data (contoh: 'Parkir', 'Keluar'): ");
-            string filter = Console.ReadLine();
-
-            string filterQuery = "SELECT * FROM data_parkir2 WHERE status_kendaraan = @filter ORDER BY id";
-            MySqlCommand filterCmd = new MySqlCommand(filterQuery, connection);
-            filterCmd.Parameters.AddWithValue("@filter", filter);
-
-            MySqlDataReader reader = filterCmd.ExecuteReader();
-
-            Console.WriteLine("\n=== Hasil Filter ===");
-            Console.WriteLine("| ID  | Jenis    | Merek     | Nama       | Jumlah | Status    | Waktu Mulai      | Waktu Selesai   | Plat      |");
-            Console.WriteLine(new string('-', 95));
-            while (reader.Read())
+            try
             {
-                Console.WriteLine($"| {reader["id"],-4} | {reader["jenis_kendaraan"],-8} | {reader["merek_kendaraan"],-9} | {reader["nama_kendaraan"],-10} | {reader["jumlah"],-6} | {reader["status_kendaraan"],-9} | {reader["waktu_mulai"],-15} | {reader["waktu_selesai"],-15} | {reader["plat"],-8} |");
+                connection.Open();
+                string query = "SELECT * FROM data_parkir WHERE status_kendaraan=@status";
+                MySqlCommand cmd = new MySqlCommand(query, connection);
+                cmd.Parameters.AddWithValue("@status", status);
+                MySqlDataReader reader = cmd.ExecuteReader();
+
+                Console.WriteLine("==== Hasil Filter ====");
+                Console.WriteLine(String.Format("{0,-4} | {1,-15} | {2,-15} | {3,-15} | {4,-7} | {5,-10} | {6,-20} | {7,-20} | {8,-10}",
+                    "ID", "Jenis", "Merek", "Nama", "Jumlah", "Status", "Waktu Mulai", "Waktu Selesai", "Plat"));
+                Console.WriteLine(new string('-', 112));
+
+                while (reader.Read())
+                {
+                    Console.WriteLine(String.Format("{0,-4} | {1,-15} | {2,-15} | {3,-15} | {4,-7} | {5,-10} | {6,-20} | {7,-20} | {8,-10}",
+                        reader["id"], reader["jenis_kendaraan"], reader["merek_kendaraan"], reader["nama_kendaraan"], reader["jumlah"],
+                        reader["status_kendaraan"], reader["waktu_mulai"], reader["waktu_selesai"], reader["plat"]));
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error: {ex.Message}");
+            }
+            finally
+            {
+                connection.Close();
             }
         }
-        catch (Exception ex)
-        {
-            Console.WriteLine("Kesalahan: " + ex.Message);
-        }
-        finally
-        {
-            connection.Close();
-        }
+        Console.WriteLine("Tekan Enter untuk melanjutkan.");
+        Console.ReadLine();
     }
 }
