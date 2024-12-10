@@ -98,18 +98,20 @@ class Program
     return nextID; // Kembalikan ID yang tersedia
 }
 
-
-
     static void InsertData()
 {
     int id = GetNextAvailableID(); // Dapatkan ID berikutnya yang tersedia
     Console.Write("Jenis Kendaraan: ");
+    
     string jenis = Console.ReadLine();
     Console.Write("Merek Kendaraan: ");
+
     string merek = Console.ReadLine();
     Console.Write("Nama Kendaraan: ");
+
     string nama = Console.ReadLine();
     Console.Write("Jumlah: ");
+    
     int jumlah = int.Parse(Console.ReadLine());
     Console.Write("Status Kendaraan (Parkir/Keluar): ");
     string status = Console.ReadLine();
