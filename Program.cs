@@ -64,13 +64,13 @@ class Program
 
     static int GetNextAvailableID()
 {
-    int nextID = 1; // Mulai dari ID 1
+    int nextID = 1; 
     using (MySqlConnection connection = new MySqlConnection(connectionString))
     {
         try
         {
             connection.Open();
-            string query = "SELECT id FROM data_parkir ORDER BY id ASC"; // Ambil semua ID yang ada
+            string query = "SELECT id FROM data_parkir ORDER BY id ASC"; 
             MySqlCommand cmd = new MySqlCommand(query, connection);
             MySqlDataReader reader = cmd.ExecuteReader();
 
@@ -78,11 +78,11 @@ class Program
             {
                 if ((int)reader["id"] == nextID)
                 {
-                    nextID++; // Jika ID ada, periksa ID berikutnya
+                    nextID++; 
                 }
                 else
                 {
-                    break; // Keluar jika menemukan celah (ID kosong)
+                    break;
                 }
             }
         }
@@ -95,30 +95,34 @@ class Program
             connection.Close();
         }
     }
-    return nextID; // Kembalikan ID yang tersedia
+    return nextID; 
 }
 
-    static void InsertData()
+    static void InsertData() // Syntax untuk Menambahkan data
 {
-    int id = GetNextAvailableID(); // Dapatkan ID berikutnya yang tersedia
+    int id = GetNextAvailableID();
+
     Console.Write("Jenis Kendaraan: ");
-    
     string jenis = Console.ReadLine();
+
     Console.Write("Merek Kendaraan: ");
-
     string merek = Console.ReadLine();
-    Console.Write("Nama Kendaraan: ");
 
+    Console.Write("Nama Kendaraan: ");
     string nama = Console.ReadLine();
+
     Console.Write("Jumlah: ");
-    
     int jumlah = int.Parse(Console.ReadLine());
+
     Console.Write("Status Kendaraan (Parkir/Keluar): ");
     string status = Console.ReadLine();
+
     Console.Write("Waktu Mulai: ");
     string waktuMulai = Console.ReadLine();
+
     Console.Write("Waktu Selesai: ");
     string waktuSelesai = Console.ReadLine();
+
     Console.Write("Plat Nomor: ");
     string plat = Console.ReadLine();
 
@@ -156,7 +160,7 @@ class Program
 }
 
 
-    static void DisplayData()
+    static void DisplayData() // Syntax untuk Menampilkan data
     {
         using (MySqlConnection connection = new MySqlConnection(connectionString))
         {
@@ -192,7 +196,7 @@ class Program
         Console.ReadLine();
     }
 
-    static void UpdateData()
+    static void UpdateData() // Syntax untuk Mengubah data
     {
         DisplayData();
         Console.Write("Masukkan ID data yang ingin diupdate: ");
@@ -248,7 +252,7 @@ class Program
         Console.ReadLine();
     }
 
-    static void DeleteData()
+    static void DeleteData() // Syntax untuk Menghapus data
     {
         DisplayData();
         Console.Write("Masukkan ID data yang ingin dihapus: ");
@@ -279,9 +283,9 @@ class Program
         Console.ReadLine();
     }
 
-    static void SearchData()
+    static void SearchData() // Syntax untuk Mencari data
     {
-        Console.Write("Masukkan kata kunci untuk pencarian: ");
+        Console.Write("Masukkan kata kunci untuk pencarian (Jenis/Merek/Nama Kendaraan): ");
         string keyword = Console.ReadLine();
 
         using (MySqlConnection connection = new MySqlConnection(connectionString))
@@ -289,7 +293,7 @@ class Program
             try
             {
                 connection.Open();
-                string query = "SELECT * FROM data_parkir WHERE jenis_kendaraan LIKE @keyword OR nama_kendaraan LIKE @keyword OR plat LIKE @keyword";
+                string query = "SELECT * FROM data_parkir WHERE jenis_kendaraan LIKE @keyword OR nama_kendaraan LIKE @keyword OR merek_kendaraan LIKE @keyword";
                 MySqlCommand cmd = new MySqlCommand(query, connection);
                 cmd.Parameters.AddWithValue("@keyword", $"%{keyword}%");
                 MySqlDataReader reader = cmd.ExecuteReader();
@@ -319,7 +323,7 @@ class Program
         Console.ReadLine();
     }
 
-    static void FilterData()
+    static void FilterData() // Syntax untuk Memfilter data
     {
         Console.Write("Masukkan status kendaraan untuk filter (Parkir/Keluar): ");
         string status = Console.ReadLine();
