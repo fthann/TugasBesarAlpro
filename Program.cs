@@ -268,6 +268,7 @@ public class Program
 
         while (running)
         {
+            Console.WriteLine("============== SISTEM MANAJEMAN DATA PARKIR KELOMPOK 5 ==============");
             Console.WriteLine("Menu:");
             Console.WriteLine("1. Masukkan Data Parkir");
             Console.WriteLine("2. Tampilkan Data Parkir");

@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("TugasBesarAlpro")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+6419d30b1c270b9872fe9e1c961d11384dea3e58")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+b17685a96bf3057e0653bf0ba239235d4a929d8c")]
 [assembly: System.Reflection.AssemblyProductAttribute("TugasBesarAlpro")]
 [assembly: System.Reflection.AssemblyTitleAttribute("TugasBesarAlpro")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
